@@ -7,6 +7,7 @@ from io import BytesIO
 from pathlib import Path
 from statistics import mean, stdev
 from typing import NotRequired, TypedDict
+import re
 
 import requests
 from mediafile import Image as MFImage
@@ -44,7 +45,11 @@ def metadata_applier(tags: Tags, fixed_location: Path, exclude_tags: list[str], 
 		if k in exclude_tags or k in ["cover_url", "cover_bytes"]: 
 			continue
 		if k == "date":
-			v = datetime.fromisoformat(str(v)).date()
+			if(re.match(r"^\d{4}$", str(v))):
+				v = str(v) + "-01-01T00:00:00Z"
+				v = datetime.fromisoformat(v).date()
+			else:
+				v = datetime.fromisoformat(str(v)).date()
 		if isinstance(v, list):
 			if not fallback_mv or (k not in fallback_mv_keys):
 				setattr(handle, f"{k}s", v) # will not work for all single => multi migrations
