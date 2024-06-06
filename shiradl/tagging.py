@@ -45,11 +45,17 @@ def metadata_applier(tags: Tags, fixed_location: Path, exclude_tags: list[str], 
 		if k in exclude_tags or k in ["cover_url", "cover_bytes"]: 
 			continue
 		if k == "date":
+			v= str(v).replace('-', '')
 			if(re.match(r"^\d{4}$", str(v))):
-				v = str(v) + "-01-01T00:00:00Z"
+				v = v+ "-01-01T00:00:00Z"
 				v = datetime.fromisoformat(v).date()
 			else:
-				v = datetime.fromisoformat(str(v)).date()
+				if(re.match(r"^\d{6}$", str(v))):
+					v = v[:4] + '-' + v[4:]
+					v = v + "-01T00:00:00Z"
+					v = datetime.fromisoformat(v).date()
+				else:
+					v = datetime.fromisoformat(str(v)).date()
 		if isinstance(v, list):
 			if not fallback_mv or (k not in fallback_mv_keys):
 				setattr(handle, f"{k}s", v) # will not work for all single => multi migrations

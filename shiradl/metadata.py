@@ -41,8 +41,11 @@ MBRecording = TypedDict("MBRecording", {
 
 def parse_datestring(datestr: str):
 	"""parse YYYYMMDD or YYYY-MM-DD into { year: str, month: str, day: str }"""
+	datestr= datestr.replace('-', '')
 	if re.match(r"^\d{4}$", datestr):
 		datestr = datestr + "01" + "01"
+	if re.match(r"^\d{6}$", datestr):
+		datestr = datestr + "01"
 	if re.match(r"^\d{8}$", datestr):
 		return { "year": datestr[0:4], "month": datestr[4:6], "day": datestr[6:8] }
 	elif "-" in datestr and re.match(r"^\d{4}-\d{2}-\d{2}$", datestr):

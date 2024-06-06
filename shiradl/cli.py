@@ -163,11 +163,17 @@ def cli(
 					if local_img_bytes is not None:
 						tags["cover_bytes"] = local_img_bytes
 				logger.debug("Applied cover Image")
+				#delete:
+				#tags["title"] = str(j + 1).zfill(3) + " - " +  track["title"]
+				ttag= tags["title"]
+				tags["title"] = track["title"]
+				#---
 				final_location = dl.get_final_location(tags, ".mp3" if dl.soundcloud is True else ".m4a", is_single, single_folder)
 				logger.debug(f'Final location is "{final_location}"')
 				temp_location = dl.get_temp_location(track["id"])	
 				if not final_location.exists() or overwrite:
 					logger.debug(f'Downloading to "{temp_location}"')
+					tags["title"] = ttag
 					if dl.soundcloud is False:
 						dl.download(track["id"], temp_location)
 					else:

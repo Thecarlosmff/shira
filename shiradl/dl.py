@@ -126,21 +126,36 @@ class Dl:
 			return self.tags
 		
 		video_id = ytmusic_watch_playlist["tracks"][0]["videoId"]
-		ytmusic_album: dict = self.ytmusic.get_album(ytmusic_watch_playlist["tracks"][0]["album"]["id"])
-		_year, _date = get_year(track, ytmusic_album)
-		tags: Tags = {
-			"title": clean_title(ytmusic_watch_playlist["tracks"][0]["title"]),
-			"album": ytmusic_album["title"],
-			"albumartist": self.get_artist(ytmusic_album["artists"]),
-			"artist": self.get_artist(ytmusic_watch_playlist["tracks"][0]["artists"]),
-			"comments": f"https://music.youtube.com/watch?v={video_id}",
-			"track": 1,
-			"tracktotal": ytmusic_album["trackCount"],
-			"date": _date,
-			"year": _year,
-			"cover_url": f'{ytmusic_watch_playlist["tracks"][0]["thumbnail"][0]["url"].split("=")[0]}'
-			+ f'=w{self.cover_size}-l{self.cover_quality}-{"rj" if self.cover_format == "jpg" else "rp"}'
-		}
+		try:
+			ytmusic_album: dict = self.ytmusic.get_album(ytmusic_watch_playlist["tracks"][0]["album"]["id"])
+			_year, _date = get_year(track, ytmusic_album)
+			tags: Tags = {
+				"title": clean_title(ytmusic_watch_playlist["tracks"][0]["title"]),
+				"album": ytmusic_album["title"],
+				"albumartist": self.get_artist(ytmusic_album["artists"]),
+				"artist": self.get_artist(ytmusic_watch_playlist["tracks"][0]["artists"]),
+				"comments": f"https://music.youtube.com/watch?v={video_id}",
+				"track": 1,
+				"tracktotal": ytmusic_album["trackCount"],
+				"date": _date,
+				"year": _year,
+				"cover_url": f'{ytmusic_watch_playlist["tracks"][0]["thumbnail"][0]["url"].split("=")[0]}'
+				+ f'=w{self.cover_size}-l{self.cover_quality}-{"rj" if self.cover_format == "jpg" else "rp"}'
+			}
+		except Exception:
+			tags: Tags = {
+				"title": clean_title(ytmusic_watch_playlist["tracks"][0]["title"]),
+				"album": ytmusic_album["title"],
+				"albumartist": self.get_artist(ytmusic_album["artists"]),
+				"artist": self.get_artist(ytmusic_watch_playlist["tracks"][0]["artists"]),
+				"comments": f"https://music.youtube.com/watch?v={video_id}",
+				"track": 1,
+				"tracktotal": ytmusic_album["trackCount"],
+				"date": _date,
+				"year": _year,
+				"cover_url": f'{ytmusic_watch_playlist["tracks"][0]["thumbnail"][0]["url"].split("=")[0]}'
+				+ f'=w{self.cover_size}-l{self.cover_quality}-{"rj" if self.cover_format == "jpg" else "rp"}'
+			}
 
 		for i, video in enumerate(self.get_ydl_extract_info(f'https://www.youtube.com/playlist?list={str(ytmusic_album["audioPlaylistId"])}')["entries"]):
 			if video["id"] == video_id:
@@ -153,7 +168,8 @@ class Dl:
 		
 		self.tags = tags
 		return self.tags
-
+		
+			
 	def get_sanizated_string(self, dirty_string, is_folder):
 		dirty_string = re.sub(r'[\\/:*?"<>|;]', "_", dirty_string)
 		if is_folder:
