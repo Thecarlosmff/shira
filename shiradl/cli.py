@@ -149,9 +149,10 @@ def cli(
 						tag_track = dl.get_ydl_extract_info(track["url"])
 					logger.debug("Starting Tigerv2")
 					tags = smart_metadata(tag_track, temp_path, "JPEG" if dl.cover_format == "jpg" else "PNG", cover_crop)
-					is_single = tags["comments"] == TIGER_SINGLE
-					if is_single:
-						tags["comments"] = track.get("webpage_url") or track.get("original_url") or track.get("url") or url
+					if "comments" in tags:
+						is_single = tags["comments"] == TIGER_SINGLE
+						if is_single:
+							tags["comments"] = track.get("webpage_url") or track.get("original_url") or track.get("url") or url
 				else:
 					tags = dl.get_tags(ytmusic_watch_playlist, track)
 					is_single = tags["tracktotal"] == 1
